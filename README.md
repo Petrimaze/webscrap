@@ -1,123 +1,153 @@
-# 📊 HH.ru Анализатор Вакансий
+# 📊 HH.ru Анализатор Вакансий - MVP
 
-Современное веб-приложение для анализа вакансий с HeadHunter с использованием AI
+**Простое веб-приложение для анализа вакансий с HeadHunter с помощью AI**
+
+Заходишь, вводишь профессию → получаешь анализ вакансий!
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-3.0.0-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-## ✨ Возможности
+## 🚀 Быстрый деплой (3 минуты!)
 
-- 🔍 **Поиск вакансий** - Автоматический сбор вакансий с HeadHunter API
-- 🤖 **AI Анализ** - Интеллектуальный анализ вакансий с помощью Google Gemini
-- 📈 **Визуализация** - Красивые графики топ-навыков
-- 💼 **Подробный отчет** - Анализ хард-скиллов, задач и рекомендации
-- 🎨 **Современный дизайн** - Адаптивный интерфейс с градиентами
+### Вариант 1: Render (Рекомендуется - бесплатно!)
 
-## 🚀 Быстрый старт
+1. Зарегистрируйся на [Render.com](https://render.com)
+2. Нажми "New +" → "Web Service"
+3. Подключи свой GitHub репозиторий
+4. Render автоматически определит настройки из `render.yaml`
+5. Добавь переменную окружения:
+   - Ключ: `GOOGLE_API_KEY`
+   - Значение: твой ключ от Google Gemini ([получить тут](https://makersuite.google.com/app/apikey))
+6. Нажми "Create Web Service"
+7. Готово! Через 2-3 минуты твой сайт будет доступен
 
-### Требования
+### Вариант 2: Railway
 
-- Python 3.8+
-- pip
+1. Зарегистрируйся на [Railway.app](https://railway.app)
+2. Нажми "New Project" → "Deploy from GitHub repo"
+3. Выбери свой репозиторий
+4. Добавь переменную `GOOGLE_API_KEY`
+5. Deploy! Готово за пару минут
 
-### Установка
+### Вариант 3: Локально (для разработки)
 
-1. Клонируйте репозиторий:
 ```bash
+# Клонируй репо
 git clone https://github.com/yourusername/webscrap.git
 cd webscrap
-```
 
-2. Создайте виртуальное окружение:
-```bash
+# Создай виртуальное окружение
 python -m venv venv
+source venv/bin/activate  # На Windows: venv\Scripts\activate
 
-# Windows
-venv\Scripts\activate
-
-# Linux/Mac
-source venv/bin/activate
-```
-
-3. Установите зависимости:
-```bash
+# Установи зависимости
 pip install -r requirements.txt
-```
 
-4. Настройте API ключ Google Gemini:
-```bash
-# Создайте файл .env
-echo "GOOGLE_API_KEY=your_api_key_here" > .env
-```
+# Создай .env файл
+echo "GOOGLE_API_KEY=твой_ключ_здесь" > .env
 
-> 💡 Получить API ключ можно на [Google AI Studio](https://makersuite.google.com/app/apikey)
-
-5. Запустите приложение:
-```bash
+# Запусти
 python app.py
 ```
 
-6. Откройте в браузере:
-```
-http://localhost:5000
-```
+Открой http://localhost:5000
 
-## 📖 Использование
+## ✨ Как пользоваться
 
-1. Введите название профессии (например, "Python разработчик")
-2. Нажмите "Анализировать"
-3. Подождите 1-2 минуты
-4. Получите подробный анализ:
-   - AI-отчет с рекомендациями
-   - График топ-10 навыков
-   - Список проанализированных вакансий
+1. **Открой сайт**
+2. **Введи профессию** (например: "Python разработчик", "Frontend developer", "Data Scientist")
+3. **Жми "Анализировать"**
+4. **Жди 1-2 минуты** пока соберутся данные
+5. **Получи результат:**
+   - 🤖 AI-анализ с рекомендациями
+   - 📊 График топ-10 навыков
+   - 📋 Список вакансий
 
-## 🏗️ Структура проекта
+## 🎯 Что внутри
+
+- **Flask** - простой веб-сервер
+- **HH.ru API** - реальные вакансии
+- **Google Gemini AI** - умный анализ (модель: gemini-2.5-flash-lite)
+- **Chart.js** - красивые графики
+- **Bootstrap стили** - современный дизайн
+
+## 📁 Структура
 
 ```
 webscrap/
-├── app.py                 # Flask приложение (backend)
-├── requirements.txt       # Зависимости Python
-├── .gitignore            # Git ignore файл
-├── README.md             # Документация
+├── app.py              # 🔧 Основной код (Flask + логика)
 ├── templates/
-│   └── index.html        # Главная страница
-└── static/
-    ├── css/
-    │   └── style.css     # Стили
-    └── js/
-        └── app.js        # JavaScript логика
+│   └── index.html      # 🎨 Главная страница
+├── static/
+│   ├── css/style.css   # 💅 Стили
+│   └── js/app.js       # ⚡ JavaScript
+├── requirements.txt    # 📦 Зависимости Python
+├── render.yaml         # ☁️ Конфиг для Render
+├── Procfile           # 🚀 Для Heroku/Railway
+└── README.md          # 📖 Эта инструкция
 ```
 
-## 🎨 Технологии
+## 🔑 Получить API ключ Google Gemini
 
-### Backend
-- **Flask** - Веб-фреймворк
-- **BeautifulSoup4** - Парсинг HTML
-- **Requests** - HTTP запросы
-- **Google Generative AI** - AI анализ
+1. Иди на https://makersuite.google.com/app/apikey
+2. Войди через Google аккаунт
+3. Нажми "Create API Key"
+4. Скопируй ключ
+5. Добавь в переменные окружения на Render/Railway или в `.env` файл локально
 
-### Frontend
-- **HTML5/CSS3** - Разметка и стили
-- **JavaScript (ES6+)** - Логика
-- **Chart.js** - Графики
-- **Google Fonts (Inter)** - Шрифты
+**Важно:** API ключ **БЕСПЛАТНЫЙ** для личного использования!
 
-## 🔧 API Endpoints
+## 🐛 Проблемы?
 
-### `POST /api/analyze`
+### "Вакансии не найдены"
+- Попробуй другую формулировку профессии
+- Используй русский язык: "Python разработчик" вместо "Python developer"
 
-Анализирует вакансии для указанной профессии.
+### "API Error"
+- Проверь, что `GOOGLE_API_KEY` установлен правильно
+- Убедись что ключ валидный
 
-**Request:**
+### Долго грузится
+- Это нормально! Собираем и анализируем ~20 вакансий
+- Обычно занимает 1-2 минуты
+
+## 🎓 Для преподавателя
+
+Это MVP (Minimum Viable Product) - минимально работающий продукт:
+
+✅ **Работает из коробки** - просто задеплой и пользуйся
+✅ **Реальные данные** - интеграция с HH.ru API
+✅ **AI анализ** - использует Google Gemini
+✅ **Визуализация** - графики навыков
+✅ **Современный UI** - адаптивный дизайн
+✅ **Бесплатный хостинг** - Render/Railway free tier
+
+## 📝 Примеры запросов
+
+```
+Python разработчик
+Frontend developer
+Data Scientist
+DevOps инженер
+QA engineer
+Product Manager
+```
+
+## 🔧 Технические детали
+
+### API Endpoint
+
+**POST** `/api/analyze`
+
+Request:
 ```json
 {
   "profession": "Python разработчик"
 }
 ```
 
-**Response:**
+Response:
 ```json
 {
   "vacancies": [...],
@@ -127,92 +157,34 @@ webscrap/
 }
 ```
 
-## 🌐 Деплой
+### Логика работы
 
-### Heroku
+1. Ищем вакансии на HH.ru по ключевому слову
+2. Берем каждую 10-ую вакансию (максимум 20)
+3. Парсим описание и навыки
+4. Считаем топ-10 навыков
+5. Отправляем все в Gemini AI для анализа
+6. Показываем результат пользователю
 
-1. Создайте файл `Procfile`:
-```
-web: gunicorn app:app
-```
+## 🚀 Что можно улучшить
 
-2. Деплой:
-```bash
-heroku create your-app-name
-heroku config:set GOOGLE_API_KEY=your_api_key
-git push heroku main
-```
-
-### Render / Railway / Vercel
-
-Аналогично - используйте `gunicorn app:app` для запуска.
-
-## ⚙️ Конфигурация
-
-### Переменные окружения
-
-- `GOOGLE_API_KEY` - API ключ Google Gemini (обязательно)
-- `FLASK_ENV` - Окружение Flask (development/production)
-
-### Настройки в коде
-
-В `app.py` можно изменить:
-- Количество анализируемых вакансий (по умолчанию: 20)
-- Регион поиска (по умолчанию: Россия, area=113)
-- Модель AI (по умолчанию: gemini-2.5-flash)
-
-## 📝 Примеры запросов
-
-- "Python разработчик"
-- "Frontend developer"
-- "Data Scientist"
-- "DevOps инженер"
-- "Product Manager"
-
-## 🐛 Решение проблем
-
-### Ошибка API ключа
-- Проверьте, что `GOOGLE_API_KEY` установлен в `.env`
-- Убедитесь, что ключ валидный
-
-### Не находятся вакансии
-- Попробуйте изменить формулировку запроса
-- Проверьте подключение к интернету
-
-### Ошибки при установке
-```bash
-# Обновите pip
-pip install --upgrade pip
-
-# Переустановите зависимости
-pip install -r requirements.txt --force-reinstall
-```
-
-## 🤝 Вклад
-
-Буду рад вашим Pull Request'ам!
-
-1. Fork проекта
-2. Создайте ветку (`git checkout -b feature/AmazingFeature`)
-3. Commit изменения (`git commit -m 'Add some AmazingFeature'`)
-4. Push в ветку (`git push origin feature/AmazingFeature`)
-5. Откройте Pull Request
+- [ ] Кэширование результатов
+- [ ] Фильтры по городам/зарплате
+- [ ] Экспорт в PDF
+- [ ] Сравнение нескольких профессий
+- [ ] История поисков
+- [ ] Регистрация пользователей
 
 ## 📄 Лицензия
 
-MIT License - используйте свободно!
+MIT License - используй свободно!
 
 ## 👨‍💻 Автор
 
-Создано с ❤️ для анализа IT-вакансий
-
-## 🙏 Благодарности
-
-- [HeadHunter API](https://dev.hh.ru/)
-- [Google Gemini AI](https://ai.google.dev/)
-- [Flask](https://flask.palletsprojects.com/)
-- [Chart.js](https://www.chartjs.org/)
+Сделано с ❤️ для анализа IT-вакансий
 
 ---
 
-⭐ Если проект помог, поставьте звезду!
+⭐ **Нравится проект? Поставь звезду на GitHub!**
+
+🔗 **Задеплоил?** Скинь ссылку, посмотрим что получилось!

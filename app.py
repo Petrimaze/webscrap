@@ -13,7 +13,7 @@ CORS(app)
 # Configuration
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', 'AIzaSyC71NkOu9mIlcRCX6d_WWX9jwl1PwMFMZk')
 genai.configure(api_key=GOOGLE_API_KEY)
-model = genai.GenerativeModel('gemini-2.5-flash')
+model = genai.GenerativeModel('gemini-2.5-flash-lite')
 
 @app.route('/')
 def index():
