@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HH.ru Анализатор Вакансий</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="40" height="40" rx="8" fill="url(#gradient)"/>
+                    <path d="M12 12h16v16H12z" fill="white" opacity="0.2"/>
+                    <text x="20" y="27" text-anchor="middle" fill="white" font-size="20" font-weight="bold">HH</text>
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="40" y2="40">
+                            <stop offset="0%" style="stop-color:#667eea"/>
+                            <stop offset="100%" style="stop-color:#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>Анализатор Вакансий</span>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="hero-title">Анализ вакансий с HeadHunter</h1>
+            <p class="hero-subtitle">Узнайте, какие навыки нужны для вашей профессии на основе реальных вакансий</p>
+
+            <!-- Search Form -->
+            <div class="search-box">
+                <form id="searchForm">
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            id="professionInput"
+                            class="profession-input"
+                            placeholder="Введите название профессии (например, Python разработчик)"
+                            required
+                        >
+                        <button type="submit" class="search-btn">
+                            <span class="btn-text">Анализировать</span>
+                            <span class="btn-loader hidden">
+                                <svg class="spinner" width="20" height="20" viewBox="0 0 50 50">
+                                    <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="search-info">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z" fill="currentColor"/>
+                            <path d="M7 4h2v5H7V4zm0 6h2v2H7v-2z" fill="currentColor"/>
+                        </svg>
+                        <span>Анализ займет 1-2 минуты. Мы проанализируем десятки вакансий и составим отчет.</span>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state hidden">
+            <div class="loading-card">
+                <div class="loading-animation">
+                    <div class="loading-circle"></div>
+                    <div class="loading-circle"></div>
+                    <div class="loading-circle"></div>
+                </div>
+                <h3>Анализируем вакансии...</h3>
+                <p id="loadingStatus">Собираем данные с HeadHunter</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="results-section hidden">
+            <!-- AI Analysis -->
+            <div class="result-card ai-analysis">
+                <div class="card-header">
+                    <h2>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Анализ от AI
+                    </h2>
+                </div>
+                <div class="card-content" id="aiAnalysisContent">
+                    <!-- AI analysis will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Skills Chart -->
+            <div class="result-card skills-chart">
+                <div class="card-header">
+                    <h2>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                            <rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                            <rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                            <rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Топ-10 Навыков
+                    </h2>
+                </div>
+                <div class="card-content">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Vacancies List -->
+            <div class="result-card vacancies-list">
+                <div class="card-header">
+                    <h2>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" stroke="currentColor" stroke-width="2"/>
+                            <rect x="8" y="2" width="8" height="4" rx="1" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Проанализированные Вакансии
+                    </h2>
+                    <span class="vacancy-count" id="vacancyCount">0 вакансий</span>
+                </div>
+                <div class="card-content">
+                    <div id="vacanciesList" class="vacancies-grid">
+                        <!-- Vacancies will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn-secondary" onclick="location.reload()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Новый анализ
+                </button>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="error-state hidden">
+            <div class="error-card">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <h3>Произошла ошибка</h3>
+                <p id="errorMessage">Попробуйте еще раз или измените запрос</p>
+                <button class="btn-primary" onclick="location.reload()">Попробовать снова</button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Анализатор вакансий HH.ru • Powered by Google Gemini AI</p>
+            <div class="footer-links">
+                <a href="https://hh.ru" target="_blank">HeadHunter</a>
+                <span>•</span>
+                <a href="https://github.com" target="_blank">GitHub</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
