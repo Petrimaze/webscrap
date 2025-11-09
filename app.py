@@ -36,19 +36,27 @@ def analyze_vacancies():
         url = 'https://api.hh.ru/vacancies'
         vacancy_ids = []
 
+        # Add headers to avoid being blocked by HH.ru
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+
         for page in range(5):
             params = {
-                'text': PROFESSION_NAME,
-                'area': 113,
+                'text': f'NAME:({PROFESSION_NAME})',
+                'area': 1,
                 'per_page': 100,
                 'page': page
             }
-            response = requests.get(url, params=params, timeout=10)
+            response = requests.get(url, params=params, headers=headers, timeout=30)
             if response.status_code == 200:
                 search_data = response.json()
                 page_vacancy_ids = [item['id'] for item in search_data.get('items', [])]
                 vacancy_ids.extend(page_vacancy_ids)
-            time.sleep(0.3)
+                print(f"Страница {page}: найдено {len(page_vacancy_ids)} вакансий")
+            time.sleep(0.5)
+
+        print(f"Всего собрано vacancy_ids: {len(vacancy_ids)}")
 
         if not vacancy_ids:
             return jsonify({'error': 'Вакансии не найдены. Попробуйте изменить запрос.'}), 404
