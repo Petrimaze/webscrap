@@ -32,24 +32,32 @@ def analyze_vacancies():
         if not profession:
             return jsonify({'error': 'Название профессии не указано'}), 400
 
-        # Step 1: Search for vacancies on HH.ru
+        # Step 1: Search for vacancies on HH.ru (5 pages, 100 per page = 500 total)
         url = 'https://api.hh.ru/vacancies'
-        params = {
-            'text': profession,
-            'area': 113,  # Russia
-            'per_page': 100,
-            'page': 0
-        }
+        vacancy_ids = []
 
-        response = requests.get(url, params=params, timeout=10)
-        if response.status_code != 200:
-            return jsonify({'error': 'Ошибка при поиске вакансий'}), 500
+        # Collect from 5 pages like in original code
+        for page in range(5):
+            params = {
+                'text': profession,
+                'area': 113,  # Russia
+                'per_page': 100,
+                'page': page
+            }
 
-        search_data = response.json()
-        vacancy_ids = [item['id'] for item in search_data.get('items', [])]
+            response = requests.get(url, params=params, timeout=10)
+            if response.status_code == 200:
+                search_data = response.json()
+                page_vacancy_ids = [item['id'] for item in search_data.get('items', [])]
+                vacancy_ids.extend(page_vacancy_ids)
+                print(f"Собрано вакансий со страницы {page}: {len(page_vacancy_ids)}")
+
+            time.sleep(0.3)  # Be nice to API
 
         if not vacancy_ids:
             return jsonify({'error': 'Вакансии не найдены. Попробуйте изменить запрос.'}), 404
+
+        print(f"Всего собрано vacancy_ids: {len(vacancy_ids)}")
 
         # Step 2: Process vacancies (YOUR ORIGINAL CODE!)
         all_vacancies_data = []
