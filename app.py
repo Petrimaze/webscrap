@@ -117,11 +117,7 @@ def analyze_vacancies():
 """
 
         print("\nОтправил запросище.")
-        # Increase Google API timeout to 5 minutes for large prompts
-        response = model.generate_content(
-            prompt,
-            request_options={"timeout": 300}
-        )
+        response = model.generate_content(prompt)
         print("\nРезультаты анализа:")
         print(response.text)
 
