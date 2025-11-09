@@ -89,7 +89,8 @@ def analyze_vacancies():
 
         print("Я ТОЧНО ВСЕ")
 
-        all_vacancies_text = [item['description'] for item in all_vacancies_data]
+        # For AI: use first 1000 chars of each vacancy to reduce prompt size
+        all_vacancies_text = [item['description'][:1000] for item in all_vacancies_data]
 
         pd.set_option('display.max_colwidth', None)
         df = pd.DataFrame(all_vacancies_data)
