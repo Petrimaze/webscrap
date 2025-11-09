@@ -24,18 +24,6 @@ def index():
 def analyze_vacancies():
     """
     Analyze vacancies for a given profession
-
-    Request body:
-    {
-        "profession": "Python разработчик"
-    }
-
-    Response:
-    {
-        "vacancies": [...],
-        "skills": [...],
-        "ai_analysis": "..."
-    }
     """
     try:
         data = request.json
@@ -44,157 +32,76 @@ def analyze_vacancies():
         if not profession:
             return jsonify({'error': 'Название профессии не указано'}), 400
 
-        # Step 1: Search for vacancies
-        vacancy_ids = search_vacancies(profession)
+        # Step 1: Search for vacancies on HH.ru
+        url = 'https://api.hh.ru/vacancies'
+        params = {
+            'text': profession,
+            'area': 113,  # Russia
+            'per_page': 100,
+            'page': 0
+        }
+
+        response = requests.get(url, params=params, timeout=10)
+        if response.status_code != 200:
+            return jsonify({'error': 'Ошибка при поиске вакансий'}), 500
+
+        search_data = response.json()
+        vacancy_ids = [item['id'] for item in search_data.get('items', [])]
 
         if not vacancy_ids:
             return jsonify({'error': 'Вакансии не найдены. Попробуйте изменить запрос.'}), 404
 
-        # Step 2: Fetch vacancy details (every 10th vacancy to speed up)
+        # Step 2: Process vacancies (YOUR ORIGINAL CODE!)
         all_vacancies_data = []
         all_skills = []
 
-        for vacancy_id in vacancy_ids[::10]:  # Take every 10th vacancy
-            vacancy_data = fetch_vacancy_details(vacancy_id)
+        print("Летсгоу")
 
-            if vacancy_data:
-                all_vacancies_data.append(vacancy_data)
-                all_skills.extend(vacancy_data.get('skills', []))
+        for vacancy_id in vacancy_ids[::10]:  # Take every 10th vacancy like in original
+            vacancy_url = f'https://api.hh.ru/vacancies/{vacancy_id}'
+            response = requests.get(vacancy_url)
 
-            # Be nice to the API
+            if response.status_code == 200:
+                vacancy_data = response.json()
+
+                description_html = vacancy_data.get('description', '')
+                soup = BeautifulSoup(description_html, 'html.parser')
+                clean_text = soup.get_text(separator='\n')
+
+                key_skills_data = vacancy_data.get('key_skills', [])
+                current_vacancy_skills = [skill['name'].lower() for skill in key_skills_data]
+                all_skills.extend(current_vacancy_skills)
+
+                vacancy_info = {
+                    'id': vacancy_id,
+                    'name': vacancy_data.get('name', 'Название не найдено'),
+                    'url': vacancy_data.get('alternate_url', 'URL не найден'),
+                    'description': clean_text
+                }
+
+                all_vacancies_data.append(vacancy_info)
+                print(f"Вакансия {vacancy_id} обработана.")
+
             time.sleep(0.5)
 
-            # Limit to 20 vacancies max
-            if len(all_vacancies_data) >= 20:
-                break
+        print("Я ТОЧНО ВСЕ")
 
         if not all_vacancies_data:
             return jsonify({'error': 'Не удалось получить данные вакансий'}), 500
 
         # Step 3: Analyze skills
-        skills_analysis = analyze_skills(all_skills)
+        if all_skills:
+            skill_counts = Counter(all_skills)
+            top_skills = skill_counts.most_common(10)
+            skills_analysis = [
+                {'skill': skill, 'count': count}
+                for skill, count in top_skills
+            ]
+        else:
+            skills_analysis = []
 
-        # Step 4: AI Analysis
-        ai_analysis = perform_ai_analysis(all_vacancies_data, profession)
-
-        # Step 5: Prepare response
-        response = {
-            'vacancies': all_vacancies_data,
-            'skills': skills_analysis,
-            'ai_analysis': ai_analysis,
-            'total_vacancies': len(all_vacancies_data)
-        }
-
-        return jsonify(response)
-
-    except Exception as e:
-        print(f"Error in analyze_vacancies: {str(e)}")
-        return jsonify({'error': f'Произошла ошибка: {str(e)}'}), 500
-
-def search_vacancies(profession, per_page=100):
-    """
-    Search for vacancies on HH.ru
-
-    Args:
-        profession: Job title to search for
-        per_page: Number of results per page (max 100)
-
-    Returns:
-        List of vacancy IDs
-    """
-    url = 'https://api.hh.ru/vacancies'
-    params = {
-        'text': profession,
-        'area': 113,  # Russia
-        'per_page': per_page,
-        'page': 0
-    }
-
-    try:
-        response = requests.get(url, params=params, timeout=10)
-        response.raise_for_status()
-        data = response.json()
-
-        vacancy_ids = [item['id'] for item in data.get('items', [])]
-        return vacancy_ids
-
-    except Exception as e:
-        print(f"Error searching vacancies: {str(e)}")
-        return []
-
-def fetch_vacancy_details(vacancy_id):
-    """
-    Fetch detailed information about a vacancy
-
-    Args:
-        vacancy_id: Vacancy ID
-
-    Returns:
-        Dictionary with vacancy details
-    """
-    url = f'https://api.hh.ru/vacancies/{vacancy_id}'
-
-    try:
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-        vacancy_data = response.json()
-
-        # Parse description HTML
-        description_html = vacancy_data.get('description', '')
-        soup = BeautifulSoup(description_html, 'html.parser')
-        clean_text = soup.get_text(separator='\n')
-
-        # Extract skills
-        key_skills_data = vacancy_data.get('key_skills', [])
-        skills = [skill['name'].lower() for skill in key_skills_data]
-
-        return {
-            'id': vacancy_id,
-            'name': vacancy_data.get('name', 'Название не найдено'),
-            'url': vacancy_data.get('alternate_url', ''),
-            'description': clean_text[:500],  # Limit description length
-            'skills': skills
-        }
-
-    except Exception as e:
-        print(f"Error fetching vacancy {vacancy_id}: {str(e)}")
-        return None
-
-def analyze_skills(all_skills):
-    """
-    Analyze and count skills
-
-    Args:
-        all_skills: List of all skills
-
-    Returns:
-        List of top 10 skills with counts
-    """
-    if not all_skills:
-        return []
-
-    skill_counts = Counter(all_skills)
-    top_skills = skill_counts.most_common(10)
-
-    return [
-        {'skill': skill, 'count': count}
-        for skill, count in top_skills
-    ]
-
-def perform_ai_analysis(vacancies_data, profession):
-    """
-    Perform AI analysis using Google Gemini
-
-    Args:
-        vacancies_data: List of vacancy dictionaries
-        profession: Job title
-
-    Returns:
-        AI analysis text
-    """
-    try:
-        # Prepare text for analysis
-        all_vacancies_text = [item['description'] for item in vacancies_data]
+        # Step 4: AI Analysis (YOUR ORIGINAL PROMPT!)
+        all_vacancies_text = [item['description'] for item in all_vacancies_data]
         promptishe = "\n\n--- НОВАЯ ВАКАНСИЯ ---\n\n".join(all_vacancies_text)
 
         prompt = f"""
@@ -216,12 +123,25 @@ def perform_ai_analysis(vacancies_data, profession):
 Ответ должен быть структурированным, ясным и на русском языке.
 """
 
-        response = model.generate_content(prompt)
-        return response.text
+        print("\nОтправил запросище.")
+        ai_response = model.generate_content(prompt)
+        ai_analysis = ai_response.text
+        print("\nРезультаты анализа:")
+        print(ai_analysis)
+
+        # Step 5: Prepare response
+        response = {
+            'vacancies': all_vacancies_data,
+            'skills': skills_analysis,
+            'ai_analysis': ai_analysis,
+            'total_vacancies': len(all_vacancies_data)
+        }
+
+        return jsonify(response)
 
     except Exception as e:
-        print(f"Error in AI analysis: {str(e)}")
-        return f"Не удалось выполнить AI анализ: {str(e)}"
+        print(f"Error in analyze_vacancies: {str(e)}")
+        return jsonify({'error': f'Произошла ошибка: {str(e)}'}), 500
 
 if __name__ == '__main__':
     # For development
