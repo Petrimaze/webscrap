@@ -43,7 +43,7 @@ def analyze_vacancies():
 
         for page in range(5):
             params = {
-                'text': f'NAME:({PROFESSION_NAME})',
+                'text': PROFESSION_NAME,
                 'area': 1,
                 'per_page': 100,
                 'page': page
